@@ -1,7 +1,7 @@
 <template>
   <v-row class="fill-height">
     <v-col>
-      
+      <!-- <b>{{ $refs.calendar.title}}</b> -->
       <v-sheet height="680">
         <v-calendar
           ref="calendar"
@@ -9,8 +9,8 @@
           color="primary"
           :events="events"
           :event-color="getEventColor"
+          :event-ripple="false"
           :type="type"
-          @click:event="showEvent"
           @click:more="viewDay"
           @click:date="viewDay"
           @change="updateRange"
@@ -109,8 +109,34 @@
     },
     methods: {
 
+      getEvents ({ start, end }) {
+        const events = []
 
+        const min = new Date(`${start.date}T00:00:00`).getTime()
+        const max = new Date(`${end.date}T23:59:59`).getTime()
+        const days = (max - min) / 86400000
+        const eventCount = this.rnd(days, days + 20)
+
+        for (let i = 0; i < eventCount; i++) {
+          const timed = this.rnd(0, 3) !== 0
+          const firstTimestamp = this.rnd(min, max)
+          const secondTimestamp = this.rnd(2, timed ? 8 : 288) * 900000
+          const start = firstTimestamp - (firstTimestamp % 900000)
+          const end = start + secondTimestamp
+
+          events.push({
+            name: this.rndElement(this.names),
+            color: this.rndElement(this.colors),
+            start,
+            end,
+            timed,
+          })
+        }
+
+        this.events = events
+      },
       GetMonthName(){
+        // this.events = []
         return this.$refs.calendar.title
       },
       viewDay ({ date }) {
@@ -272,7 +298,7 @@
   }
 </script>
 
-<style scoped lang="scss">
+<style  lang="scss">
 .v-event-draggable {
   padding-left: 6px;
 }

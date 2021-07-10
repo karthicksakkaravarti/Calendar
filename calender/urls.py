@@ -15,7 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.views.generic import TemplateView
+
+
+class MyFormView(TemplateView):
+    template_name = 'index.html'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', MyFormView.as_view()),
+
 ]
